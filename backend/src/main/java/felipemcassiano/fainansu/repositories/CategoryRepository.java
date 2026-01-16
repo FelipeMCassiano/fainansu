@@ -10,9 +10,5 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends MongoRepository<Category, String> {
-    @Aggregation(pipeline = {
-            "{unwind:  '$entires'}",
-            "{$replaceRoot:  {newRoot: '$entries'}}"
-    })
-    List<Entry> findAllEntries();
+
 }

@@ -1,10 +1,8 @@
 package felipemcassiano.fainansu.controllers;
 
-import felipemcassiano.fainansu.dtos.CategoryDTO;
+import felipemcassiano.fainansu.dtos.CategorySummaryDTO;
 import felipemcassiano.fainansu.dtos.CategoryEntryDTO;
 import felipemcassiano.fainansu.dtos.RegisterCategoryDTO;
-import felipemcassiano.fainansu.models.Category;
-import felipemcassiano.fainansu.repositories.CategoryRepository;
 import felipemcassiano.fainansu.services.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +21,15 @@ public class CategoryController {
     }
 
 
-    @GetMapping("")
-    public ResponseEntity<List<CategoryDTO>> getAll() {
-        List<CategoryDTO> response = categoryService.findAll();
+    @GetMapping("/summary")
+    public ResponseEntity<List<CategorySummaryDTO>> getAllSummary() {
+        List<CategorySummaryDTO> response = categoryService.findAllSummary();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<CategoryEntryDTO>> getAll() {
+        return ResponseEntity.ok(categoryService.findAllCategoriesWithEntries());
     }
 
     @PostMapping("")
@@ -35,7 +38,7 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("{id}/entries")
+    @GetMapping("{id}")
     public ResponseEntity<CategoryEntryDTO> getCategoryWithEntries(@PathVariable String id) {
         CategoryEntryDTO response = categoryService.findCategoryWithEntries(id);
 

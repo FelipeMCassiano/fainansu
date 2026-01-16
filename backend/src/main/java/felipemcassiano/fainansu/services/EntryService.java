@@ -22,9 +22,11 @@ public class EntryService {
     }
 
     public List<EntryDTO> findAllEntries(boolean shouldConvert) {
-        List<Entry> list = categoryRepository.findAllEntries();
+        List<Category> list = categoryRepository.findAll();
 
-        return  list.stream().map(e -> EntryDTO.fromEntity(e, shouldConvert? converterService.amountToDouble(e.getAmount()): e.getAmount())).toList();
+        List<Entry> entries = list.stream().flatMap(c -> c.getEntries().stream()).toList();
+
+        return entries.stream().map(e -> EntryDTO.fromEntity(e, shouldConvert? converterService.amountToDouble(e.getAmount()): e.getAmount())).toList();
     }
 
     public void registerEntry(RegisterEntryDTO dto) {

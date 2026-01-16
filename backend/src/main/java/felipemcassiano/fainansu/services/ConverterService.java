@@ -4,9 +4,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ConverterService {
-
-
-
     public Long amountToLong(Double value) {
         Double  d = (value * 100 );
         return d.longValue();
