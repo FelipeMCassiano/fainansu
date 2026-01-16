@@ -9,7 +9,6 @@ import felipemcassiano.fainansu.models.Entry;
 import felipemcassiano.fainansu.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +16,12 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final EntryService entryService;
+    private final ConverterService converterService;
 
-    public CategoryService(CategoryRepository categoryRepository, EntryService entryService) {
+    public CategoryService(CategoryRepository categoryRepository, EntryService entryService, ConverterService converterService) {
         this.categoryRepository = categoryRepository;
         this.entryService = entryService;
+        this.converterService = converterService;
     }
 
 
@@ -33,8 +34,8 @@ public class CategoryService {
 
         List<Entry> entries = category.getEntries();
 
-        Double total = entryService.convertAmountToDouble(entries.stream().mapToLong(Entry::getAmount).sum());
-        return new CategoryEntryDTO(category.getId(), category.getName(), total,entries.stream().map(e -> EntryDTO.fromEntity(e, entryService.convertAmountToDouble(e.getAmount()))).toList());
+        Double total = converterService.amountToDouble(entries.stream().mapToLong(Entry::getAmount).sum());
+        return new CategoryEntryDTO(category.getId(), category.getName(), total,entries.stream().map(e -> EntryDTO.fromEntity(e, converterService.amountToDouble(e.getAmount()))).toList());
     }
 
     public List<CategoryDTO> findAll() {

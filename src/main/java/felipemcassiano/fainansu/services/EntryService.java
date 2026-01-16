@@ -14,15 +14,17 @@ import java.util.List;
 public class EntryService {
 
     private final CategoryRepository categoryRepository;
+    private final ConverterService converterService;
 
-    public EntryService(CategoryRepository categoryRepository) {
+    public EntryService(CategoryRepository categoryRepository, ConverterService converterService) {
         this.categoryRepository = categoryRepository;
+        this.converterService = converterService;
     }
 
     public List<EntryDTO> findAllEntries(boolean shouldConvert) {
         List<Entry> list = categoryRepository.findAllEntries();
 
-        return  list.stream().map(e -> EntryDTO.fromEntity(e, shouldConvert? convertAmountToDouble(e.getAmount()): e.getAmount())).toList();
+        return  list.stream().map(e -> EntryDTO.fromEntity(e, shouldConvert? converterService.amountToDouble(e.getAmount()): e.getAmount())).toList();
     }
 
     public void registerEntry(RegisterEntryDTO dto) {
@@ -30,21 +32,12 @@ public class EntryService {
         Category category = categoryRepository.findById(dto.categoryId()).orElseThrow(()-> new RuntimeException());
 
 
-        Entry newEntry = new Entry(dto.description(), convertAmountToLong(dto.amount()), LocalDateTime.now(),dto.type(), dto.categoryId());
+        Entry newEntry = new Entry(dto.description(), converterService.amountToLong(dto.amount()), LocalDateTime.now(),dto.type(), dto.categoryId());
 
         category.addEntry(newEntry);
         categoryRepository.save(category);
     }
 
 
-    public Long convertAmountToLong(Double value) {
-        Double  d = (value * 100 );
-        return d.longValue();
-    }
-
-    public Double convertAmountToDouble(Long value) {
-        Double l = (value.doubleValue() / 100.0);
-        return l;
-    }
 
 }
